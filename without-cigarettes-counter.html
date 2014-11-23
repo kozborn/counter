@@ -1,0 +1,25 @@
+<head>
+  <title>Time without cigarettes counter</title>
+</head>
+
+<body>
+  <section class="container">
+  <header>
+    {{> loginButtons}}
+</header>
+<section class="counter container">
+  {{> counter}}
+</section>
+</section>
+</body>
+
+<template name="counter">
+  <button class="start">Start counter</button>
+  {{# each days}}
+    {{>day}}
+  {{/each}}
+</template>
+
+<template name="day">
+  <h3>{{displayElapsedTime}}</h3>
+</template>
