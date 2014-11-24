@@ -60,7 +60,12 @@ if Meteor.isClient
   Template.counter.events
     'click button.start': (evt) ->
       evt.stopPropagation()
-      Meteor.call('startCounter')
+      if Days.find({ owner: Meteor.userId() }).count() > 0
+        if confirm("Are you sure? Your counter will be reset")
+          Meteor.call('removeUserCounter')
+          Meteor.call('startCounter')
+      else
+        Meteor.call('startCounter')
 
   Template.day.helpers
     displayElapsedTime: ()->
@@ -90,17 +95,12 @@ Meteor.methods
   startCounter: () ->
     if not Meteor.userId()
       throw new Meteor.Error("not-authorized")
-    if Days.find({ owner: Meteor.userId() }).count() > 0
-      if confirm "Are you sure! Your counter will be reset"
-        Days.remove({ owner: Meteor.userId() })
-        Days.insert
-          createdAt: new Date()
-          owner: Meteor.userId()
-          private: false
-          username: Meteor.user().username
-    else
-      Days.insert
-            createdAt: new Date()
-            owner: Meteor.userId()
-            private: false
-            username: Meteor.user().username
+    Days.insert
+      createdAt: new Date()
+      owner: Meteor.userId()
+      private: false
+      username: Meteor.user().username
+  removeUserCounter: () ->
+    if not Meteor.userId()
+      throw new Meteor.Error('not-authorized')
+    Days.remove({ owner: Meteor.userId() })
