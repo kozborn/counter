@@ -1,1 +1,27 @@
 /* CSS declarations go here */
+
+div.clear{
+  clear:both;
+  height: 0px;
+}
+
+div.header{
+  text-align: center;
+}
+
+div.user{
+  float: left;
+}
+
+button.start {
+  display: block;
+  margin: 10px auto;
+}
+
+
+h1.time-elapsed {
+  margin-top: 25px;
+  text-align: center;
+  font-size: 72px;
+  line-height: 72px;
+}

@@ -1,12 +1,21 @@
 <head>
-  <title>Time without cigarettes counter</title>
+  <title></title>
 </head>
 
 <body>
   <section class="container">
   <header>
+    <div class="user">
     {{> loginButtons}}
-</header>
+  </div>
+    <div class="header">
+        <h3>
+          Days without cigarettes counter!
+        </h3>
+    </div>
+    
+  <div class="clear"></div>
+  </header>
 <section class="counter container">
   {{> counter}}
 </section>
@@ -14,12 +23,12 @@
 </body>
 
 <template name="counter">
-  <button class="start">Start counter</button>
+  <button class="start btn btn-primary">Start counting days</button>
   {{# each days}}
     {{>day}}
   {{/each}}
 </template>
 
 <template name="day">
-  <h3>{{displayElapsedTime}}</h3>
+  <h1 class="time-elapsed">{{{displayElapsedTime}}}</h1>
 </template>

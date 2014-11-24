@@ -11,7 +11,7 @@ dateDiffInDays = (a, b) ->
 
 if Meteor.isClient
   Meteor.subscribe 'days'
-
+  Session.set "DocumentTitle", "Days without cigarettes counter"
   dateDiff = () ->
     a = Session.get 'createdAt'
     b = new Date()
@@ -31,13 +31,24 @@ if Meteor.isClient
     minutes = Math.floor(timestamp / (1000 * 60))
     timestamp = timestamp - (minutes * (1000 * 60))
     seconds = Math.floor(timestamp / 1000)
-
-    val = days + " days, "
-    val += hours + " hours "
-    val += minutes + " minutes and "
+    val = ""
+    if days > 0
+      val += days + " days,<br/> "
+    if hours > 0
+      val += hours + " hours, "
+    val += minutes + " minutes and <br/>"
     val += seconds + " seconds ago!"
 
+    documentTitle = ""
+    if days > 0
+      documentTitle += days + " d, "
+    if hours > 0
+      documentTitle += hours + "h: "
+    documentTitle += minutes + "m: "
+    documentTitle += seconds + "s ago!"
+
     Session.set 'dateDiff' , val
+    Session.set 'DocumentTitle', documentTitle
 
   Template.counter.helpers
     days: ()->
@@ -50,8 +61,6 @@ if Meteor.isClient
     'click button.start': (evt) ->
       evt.stopPropagation()
       Meteor.call('startCounter')
-      # $(evt.target).removeClass('start')
-      # $(evt.target).addClass('restart')
 
   Template.day.helpers
     displayElapsedTime: ()->
@@ -68,6 +77,9 @@ if Meteor.isClient
   Accounts.ui.config
     passwordSignupFields: "USERNAME_ONLY"
 
+  Deps.autorun () ->
+    document.title = Session.get "DocumentTitle"
+
 if Meteor.isServer
   Meteor.publish "days", () ->
     Days.find(
@@ -78,9 +90,17 @@ Meteor.methods
   startCounter: () ->
     if not Meteor.userId()
       throw new Meteor.Error("not-authorized")
-    Days.remove({ owner: Meteor.userId() })
-    Days.insert
-      createdAt: new Date()
-      owner: Meteor.userId()
-      private: false
-      username: Meteor.user().username
+    if Days.find({ owner: Meteor.userId() }).count() > 0
+      if confirm "Are you sure! Your counter will be reset"
+        Days.remove({ owner: Meteor.userId() })
+        Days.insert
+          createdAt: new Date()
+          owner: Meteor.userId()
+          private: false
+          username: Meteor.user().username
+    else
+      Days.insert
+            createdAt: new Date()
+            owner: Meteor.userId()
+            private: false
+            username: Meteor.user().username
